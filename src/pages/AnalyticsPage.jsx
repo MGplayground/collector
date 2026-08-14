@@ -4,6 +4,7 @@ import { CategoryBreakdown } from '../components/analytics/CategoryBreakdown'
 import { GainersLosers } from '../components/analytics/GainersLosers'
 import { PortfolioChart } from '../components/analytics/PortfolioChart'
 import { PortfolioSummary } from '../components/analytics/PortfolioSummary'
+import { Highlights } from '../components/analytics/Highlights'
 
 export function AnalyticsPage() {
   const [data, setData] = useState(null)
@@ -22,6 +23,7 @@ export function AnalyticsPage() {
         <h2 className="page-title">Analytics</h2>
       </div>
       <PortfolioSummary data={data} />
+      <Highlights mostValuable={data.mostValuable} trending={data.trending} />
       <PortfolioChart timeline={data.portfolioTimeline} />
       <CategoryBreakdown byCategory={data.byCategory} />
       <GainersLosers withGain={data.withGain} />

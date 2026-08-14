@@ -34,10 +34,51 @@ export async function getAnalyticsData() {
     }))
     .sort((a, b) => b.gainPct - a.gainPct)
 
+  // Most valuable — top 3 non-sold items by current_value
+  const mostValuable = owned
+    .filter(i => i.current_value)
+    .sort((a, b) => Number(b.current_value) - Number(a.current_value))
+    .slice(0, 3)
+    .map(i => ({ id: i.id, name: i.name, current_value: Number(i.current_value) }))
+
+  // Trending — top 3 items by absolute price move in last 30 days
+  const thirtyDaysAgo = new Date()
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+  const cutoff = thirtyDaysAgo.toISOString()
+
+  const trending = items
+    .map(item => {
+      const itemHistory = allHistory
+        .filter(h => h.item_id === item.id)
+        .sort((a, b) => a.recorded_at.localeCompare(b.recorded_at))
+
+      const recentEntries = itemHistory.filter(h => h.recorded_at >= cutoff)
+      if (!recentEntries.length) return null
+
+      // Start price: earliest in-window entry, or most recent pre-window entry
+      const preWindow = itemHistory.filter(h => h.recorded_at < cutoff)
+      const startEntry = recentEntries.length >= 2
+        ? recentEntries[0]
+        : (preWindow.length ? preWindow[preWindow.length - 1] : recentEntries[0])
+
+      const endEntry = recentEntries[recentEntries.length - 1]
+      if (startEntry === endEntry) return null  // only one data point total
+
+      const startPrice = Number(startEntry.price)
+      const endPrice   = Number(endEntry.price)
+      const recentMove = endPrice - startPrice
+      const recentMovePct = startPrice ? (recentMove / startPrice) * 100 : 0
+
+      return { id: item.id, name: item.name, recentMove, recentMovePct }
+    })
+    .filter(Boolean)
+    .sort((a, b) => Math.abs(b.recentMove) - Math.abs(a.recentMove))
+    .slice(0, 3)
+
   // Aggregate portfolio value over time from price_history
   const portfolioTimeline = buildPortfolioTimeline(items, allHistory)
 
-  return { totalValue, totalInvested, totalGain, realizedGain, byCategory, withGain, portfolioTimeline }
+  return { totalValue, totalInvested, totalGain, realizedGain, byCategory, withGain, portfolioTimeline, mostValuable, trending }
 }
 
 function buildPortfolioTimeline(items, history) {
