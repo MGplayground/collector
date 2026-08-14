@@ -22,9 +22,14 @@ function gainInfo(item) {
   return { abs, pct }
 }
 
-export function ItemDetail({ item, onEdit, onClose }) {
+export function ItemDetail({ item, onEdit, onClose, onPriceLogged }) {
   const { history, loading, logPrice } = usePriceHistory(item.id)
   const [showLogPrice, setShowLogPrice] = useState(false)
+
+  async function handleLogPrice(price, note) {
+    await logPrice(price, note)
+    onPriceLogged?.()
+  }
   const { abs, pct } = gainInfo(item)
   const gainClass = abs == null ? '' : abs >= 0 ? 'gain-text' : 'loss-text'
 
@@ -125,7 +130,7 @@ export function ItemDetail({ item, onEdit, onClose }) {
       {showLogPrice && (
         <LogPriceForm
           item={item}
-          onLog={logPrice}
+          onLog={handleLogPrice}
           onClose={() => setShowLogPrice(false)}
         />
       )}

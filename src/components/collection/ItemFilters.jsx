@@ -4,6 +4,7 @@ const SORTS      = [
   { value: 'date_desc',  label: 'Newest first' },
   { value: 'value_desc', label: 'Highest value' },
   { value: 'value_asc',  label: 'Lowest value' },
+  { value: 'gain_desc',  label: 'Biggest gain %' },
 ]
 const CAT_LABELS = { pokemon: 'Pokémon', yugioh: 'Yu-Gi-Oh!', dragonball: 'Dragon Ball Z', riftbound: 'Riftbound', other: 'Other' }
 
@@ -23,6 +24,22 @@ export function ItemFilters({ filters, onChange }) {
       <select className="item-filters__select" value={filters.sortBy ?? 'date_desc'} onChange={e => set('sortBy', e.target.value)}>
         {SORTS.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
       </select>
+      <input
+        className="item-filters__input"
+        type="number"
+        min="0"
+        placeholder="Min £"
+        value={filters.minValue ?? ''}
+        onChange={e => set('minValue', e.target.value ? Number(e.target.value) : undefined)}
+      />
+      <input
+        className="item-filters__input"
+        type="number"
+        min="0"
+        placeholder="Max £"
+        value={filters.maxValue ?? ''}
+        onChange={e => set('maxValue', e.target.value ? Number(e.target.value) : undefined)}
+      />
     </div>
   )
 }

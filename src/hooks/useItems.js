@@ -12,6 +12,20 @@ export function useItems(filters = {}) {
     setLoading(true)
     try {
       const data = await getItems(filters)
+      if (filters.sortBy === 'gain_desc') {
+        data.sort((a, b) => {
+          const pctA = a.purchase_price && a.current_value
+            ? (a.current_value - a.purchase_price) / a.purchase_price
+            : null
+          const pctB = b.purchase_price && b.current_value
+            ? (b.current_value - b.purchase_price) / b.purchase_price
+            : null
+          if (pctA === null && pctB === null) return 0
+          if (pctA === null) return 1
+          if (pctB === null) return -1
+          return pctB - pctA
+        })
+      }
       setItems(data)
     } catch (err) {
       setError(err.message)

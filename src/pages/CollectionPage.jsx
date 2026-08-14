@@ -9,7 +9,7 @@ export function CollectionPage() {
   const [filters, setFilters] = useState({})
   const [selectedId, setSelectedId] = useState(null)
   const [formItem, setFormItem] = useState(null)   // null = closed, {} = add, item = edit
-  const { items, loading, error, createItem, updateItem, deleteItem } = useItems(filters)
+  const { items, loading, error, refetch, createItem, updateItem, deleteItem } = useItems(filters)
 
   function openAdd() { setFormItem({}) }
   function openEdit(item) { setFormItem(item) }
@@ -43,6 +43,7 @@ export function CollectionPage() {
             item={detailItem}
             onEdit={item => { setSelectedId(null); setFormItem(item) }}
             onClose={() => setSelectedId(null)}
+            onPriceLogged={refetch}
           />
         ) : null
       })()}
