@@ -183,3 +183,37 @@ input:focus, select:focus, textarea:focus { border-color: var(--gold); }
 .nav__signout {
   font-size: var(--text-xs); padding: var(--space-1) var(--space-2);
 }
+
+/* Page header */
+.page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-4); }
+.page-title { font-family: var(--font-display); font-size: var(--text-2xl); font-weight: 300; color: var(--text-1); }
+.error-text { color: var(--loss); font-size: var(--text-sm); margin-bottom: var(--space-3); }
+
+/* Category badge */
+.badge--category { background: rgba(143,168,192,0.1); color: var(--text-2); }
+
+/* Item filters */
+.item-filters { display: flex; gap: var(--space-2); flex-wrap: wrap; margin-bottom: var(--space-4); }
+.item-filters__select { width: auto; flex: 1; min-width: 120px; font-size: var(--text-sm); }
+
+/* Item card */
+.item-card {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); overflow: hidden;
+  cursor: pointer; transition: border-color 0.15s, transform 0.1s;
+  display: flex; gap: var(--space-3); padding: var(--space-3);
+}
+.item-card:hover { border-color: var(--gold-dim); transform: translateY(-1px); }
+.item-card__img-wrap { flex-shrink: 0; width: 64px; height: 88px; border-radius: var(--radius-sm); overflow: hidden; background: var(--bg-elevated); }
+.item-card__img { width: 100%; height: 100%; object-fit: cover; }
+.item-card__body { flex: 1; display: flex; flex-direction: column; gap: var(--space-2); }
+.item-card__meta { display: flex; flex-wrap: wrap; gap: var(--space-1); align-items: center; }
+.item-card__grade { font-size: var(--text-xs); color: var(--text-3); }
+.item-card__name { font-size: var(--text-sm); color: var(--text-1); line-height: 1.3; }
+.item-card__values { display: flex; align-items: baseline; gap: var(--space-2); margin-top: auto; }
+.item-card__value { font-size: var(--text-lg); color: var(--text-1); }
+.item-card__pct { font-size: var(--text-sm); }
+
+/* Item list */
+.item-list { display: flex; flex-direction: column; gap: var(--space-3); }
+.item-list-loading { color: var(--text-3); padding: var(--space-5); text-align: center; }
