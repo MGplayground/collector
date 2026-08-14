@@ -257,6 +257,11 @@ input:focus, select:focus, textarea:focus { border-color: var(--gold); }
 .summary-stat { display: flex; flex-direction: column; gap: var(--space-1); background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: var(--space-3); }
 .summary-stat__label { font-size: var(--text-xs); color: var(--text-3); text-transform: uppercase; letter-spacing: 0.06em; }
 .summary-stat__value { font-size: var(--text-lg); }
+.summary-stat--hero {
+  font-size: inherit;
+  background: var(--bg-elevated);
+}
+.summary-stat--hero .summary-stat__value { font-size: var(--text-2xl); }
 .gainers-section-label { font-size: var(--text-xs); color: var(--text-3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: var(--space-2); }
 .gainer-row { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-2) 0; border-bottom: 1px solid var(--border-subtle); }
 .gainer-row:last-child { border-bottom: none; }

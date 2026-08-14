@@ -12,13 +12,13 @@ export function PortfolioSummary({ data }) {
 
   return (
     <div className="summary-grid">
-      <div className="summary-stat">
+      <div className="summary-stat summary-stat--hero">
+        <span className="summary-stat__label">Cost basis</span>
+        <span className="summary-stat__value mono">{fmt(totalInvested)}</span>
+      </div>
+      <div className="summary-stat summary-stat--hero">
         <span className="summary-stat__label">Portfolio value</span>
         <span className="summary-stat__value mono">{fmt(totalValue)}</span>
-      </div>
-      <div className="summary-stat">
-        <span className="summary-stat__label">Total invested</span>
-        <span className="summary-stat__value mono">{fmt(totalInvested)}</span>
       </div>
       <div className="summary-stat">
         <span className="summary-stat__label">Unrealized gain</span>
