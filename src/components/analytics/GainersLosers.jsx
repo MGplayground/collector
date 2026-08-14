@@ -4,8 +4,8 @@ function fmt(n) {
 
 export function GainersLosers({ withGain }) {
   if (!withGain.length) return null
-  const gainers = withGain.slice(0, 3)
-  const losers  = [...withGain].reverse().slice(0, 3).filter(i => i.gainPct < 0)
+  const gainers = withGain.filter(i => i.gainPct >= 0).slice(0, 3)
+  const losers  = withGain.filter(i => i.gainPct < 0).slice(-3).reverse()
 
   return (
     <div className="analytics-card">
