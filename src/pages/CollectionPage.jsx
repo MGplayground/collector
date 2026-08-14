@@ -36,13 +36,16 @@ export function CollectionPage() {
         loading={loading}
         onSelect={item => setSelectedId(item.id)}
       />
-      {selectedId && (
-        <ItemDetail
-          item={items.find(i => i.id === selectedId)}
-          onEdit={item => { setSelectedId(null); setFormItem(item) }}
-          onClose={() => setSelectedId(null)}
-        />
-      )}
+      {(() => {
+        const detailItem = selectedId ? items.find(i => i.id === selectedId) : null
+        return detailItem ? (
+          <ItemDetail
+            item={detailItem}
+            onEdit={item => { setSelectedId(null); setFormItem(item) }}
+            onClose={() => setSelectedId(null)}
+          />
+        ) : null
+      })()}
       {formItem !== null && (
         <ItemForm
           item={formItem?.id ? formItem : null}
