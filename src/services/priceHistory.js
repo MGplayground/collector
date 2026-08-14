@@ -11,17 +11,25 @@ export async function getPriceHistory(itemId) {
 }
 
 // Paired write: always call this instead of updating items.current_value directly.
+// If the items UPDATE fails, we compensate by deleting the inserted price_history row
+// so the DB is not left with a dangling row and a stale current_value.
 export async function logPrice(itemId, price, note = null) {
-  const { error: historyError } = await supabase
+  const { data: inserted, error: historyError } = await supabase
     .from('price_history')
     .insert({ item_id: itemId, price, note })
+    .select('id')
+    .single()
   if (historyError) throw historyError
 
   const { error: itemError } = await supabase
     .from('items')
     .update({ current_value: price })
     .eq('id', itemId)
-  if (itemError) throw itemError
+  if (itemError) {
+    // Compensating rollback: remove the orphaned price_history row.
+    await supabase.from('price_history').delete().eq('id', inserted.id)
+    throw itemError
+  }
 }
 
 export async function getAllPriceHistory() {

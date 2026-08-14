@@ -4,13 +4,17 @@ import { getPriceHistory, logPrice as logPriceSvc } from '../services/priceHisto
 export function usePriceHistory(itemId) {
   const [history, setHistory] = useState([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
   const fetch = useCallback(async () => {
     if (!itemId) return
     setLoading(true)
+    setError(null)
     try {
       const data = await getPriceHistory(itemId)
       setHistory(data)
+    } catch (err) {
+      setError(err)
     } finally {
       setLoading(false)
     }
@@ -23,5 +27,5 @@ export function usePriceHistory(itemId) {
     await fetch()
   }
 
-  return { history, loading, logPrice, refetch: fetch }
+  return { history, loading, error, logPrice, refetch: fetch }
 }
