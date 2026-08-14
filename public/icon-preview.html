@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Icon Preview — The Collector</title>
+  <style>
+    body { background: #1a1a2e; font-family: system-ui; color: #ccc; padding: 40px; display: flex; flex-direction: column; gap: 40px; align-items: flex-start; }
+    h1 { font-size: 14px; color: #888; margin: 0 0 8px; }
+    .row { display: flex; gap: 24px; align-items: flex-end; }
+    .cell { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    .cell span { font-size: 11px; color: #666; }
+    /* Simulate circular iOS launcher mask */
+    .mask-circle img { border-radius: 22%; }
+    /* Simulate squircle Android mask */
+    .mask-squircle img { border-radius: 30%; }
+    /* Simulate Android circle mask */
+    .mask-android-circle img { border-radius: 50%; }
+    section { background: #0d1b2a; border: 1px solid #1e3a52; border-radius: 12px; padding: 24px; }
+  </style>
+</head>
+<body>
+
+<section>
+  <h1>Home-screen size — 48px (real device rendering)</h1>
+  <div class="row">
+    <div class="cell">
+      <img src="/icons/icon-192.png" width="48" height="48"/>
+      <span>square (no mask)</span>
+    </div>
+    <div class="cell mask-circle">
+      <img src="/icons/icon-192.png" width="48" height="48"/>
+      <span>iOS rounded</span>
+    </div>
+    <div class="cell mask-squircle">
+      <img src="/icons/icon-512-maskable.png" width="48" height="48"/>
+      <span>Android squircle (maskable)</span>
+    </div>
+    <div class="cell mask-android-circle">
+      <img src="/icons/icon-512-maskable.png" width="48" height="48"/>
+      <span>Android circle (maskable)</span>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h1>72px — hdpi Android launcher</h1>
+  <div class="row">
+    <div class="cell">
+      <img src="/icons/icon-192.png" width="72" height="72"/>
+      <span>standard</span>
+    </div>
+    <div class="cell mask-squircle">
+      <img src="/icons/icon-512-maskable.png" width="72" height="72"/>
+      <span>maskable</span>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h1>192px — full icon tile</h1>
+  <div class="row">
+    <div class="cell">
+      <img src="/icons/icon-192.png" width="192" height="192"/>
+      <span>standard</span>
+    </div>
+    <div class="cell mask-squircle">
+      <img src="/icons/icon-512-maskable.png" width="192" height="192" style="border-radius:30%"/>
+      <span>maskable</span>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h1>Favicon — 32px browser tab</h1>
+  <div class="row">
+    <div class="cell">
+      <img src="/favicon.png" width="32" height="32"/>
+      <span>32px PNG</span>
+    </div>
+    <div class="cell">
+      <img src="/favicon.svg" width="32" height="32"/>
+      <span>SVG</span>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h1>Apple Touch Icon — 180px (iOS home screen, Spotlight)</h1>
+  <div class="row">
+    <div class="cell mask-circle">
+      <img src="/apple-touch-icon.png" width="60" height="60"/>
+      <span>60px (preview)</span>
+    </div>
+    <div class="cell mask-circle">
+      <img src="/apple-touch-icon.png" width="180" height="180"/>
+      <span>180px native</span>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>
