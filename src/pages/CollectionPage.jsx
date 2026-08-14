@@ -1,3 +1,3 @@
-export default function CollectionPage() {
+export function CollectionPage() {
   return <div>Collection</div>
 }

@@ -1,3 +1,3 @@
-export default function CalendarPage() {
+export function CalendarPage() {
   return <div>Calendar</div>
 }
