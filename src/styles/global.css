@@ -262,3 +262,20 @@ input:focus, select:focus, textarea:focus { border-color: var(--gold); }
 .gainer-row__name { flex: 1; font-size: var(--text-sm); color: var(--text-1); }
 .gainer-row__pct { min-width: 56px; text-align: right; font-size: var(--text-sm); }
 .gainer-row__abs { min-width: 72px; text-align: right; font-size: var(--text-sm); }
+
+/* Release calendar */
+.cal-list { display: flex; flex-direction: column; gap: var(--space-2); }
+.cal-item { display: flex; gap: var(--space-3); align-items: flex-start; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: var(--space-3); cursor: pointer; transition: border-color 0.15s; }
+.cal-item:hover { border-color: var(--gold-dim); }
+.cal-item--next { border-color: var(--gold); background: rgba(201,168,76,0.06); }
+.cal-item--past { opacity: 0.5; }
+.cal-item__date { font-size: var(--text-xs); color: var(--text-3); min-width: 88px; padding-top: 2px; }
+.cal-item__body { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.cal-item__name { font-size: var(--text-base); color: var(--text-1); }
+.cal-item__game { font-size: var(--text-sm); color: var(--text-3); }
+.cal-item__note { font-size: var(--text-sm); color: var(--text-2); font-style: italic; margin-top: 2px; }
+.cal-item__status { display: flex; align-items: center; }
+.cal-item__countdown { font-family: var(--font-mono); font-size: var(--text-sm); color: var(--gold); font-weight: 500; }
+.badge--past     { background: rgba(77,106,130,0.15); color: var(--text-3); }
+.badge--next     { background: rgba(201,168,76,0.15); color: var(--gold); }
+.badge--upcoming { background: rgba(78,205,196,0.1); color: var(--gain); }
