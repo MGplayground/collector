@@ -1,7 +1,8 @@
 import { useState } from 'react'
+import { ItemDetail } from '../components/collection/ItemDetail'
 import { ItemFilters } from '../components/collection/ItemFilters'
-import { ItemList } from '../components/collection/ItemList'
 import { ItemForm } from '../components/collection/ItemForm'
+import { ItemList } from '../components/collection/ItemList'
 import { useItems } from '../hooks/useItems'
 
 export function CollectionPage() {
@@ -33,8 +34,15 @@ export function CollectionPage() {
       <ItemList
         items={items}
         loading={loading}
-        onSelect={item => { setSelectedId(item.id); openEdit(item) }}
+        onSelect={item => setSelectedId(item.id)}
       />
+      {selectedId && (
+        <ItemDetail
+          item={items.find(i => i.id === selectedId)}
+          onEdit={item => { setSelectedId(null); setFormItem(item) }}
+          onClose={() => setSelectedId(null)}
+        />
+      )}
       {formItem !== null && (
         <ItemForm
           item={formItem?.id ? formItem : null}
