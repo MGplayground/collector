@@ -1,1 +1,133 @@
-/* Global styles — populated in Task 4 */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { font-size: 16px; -webkit-text-size-adjust: 100%; }
+
+body {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  color: var(--text-1);
+  background: var(--bg-base);
+  min-height: 100dvh;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--gold); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+button { cursor: pointer; font-family: inherit; }
+
+input, select, textarea {
+  font-family: inherit;
+  font-size: var(--text-base);
+  color: var(--text-1);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-3);
+  width: 100%;
+  outline: none;
+  transition: border-color 0.15s;
+}
+input:focus, select:focus, textarea:focus { border-color: var(--gold); }
+
+/* Utility classes */
+.loading-screen {
+  display: flex; align-items: center; justify-content: center;
+  height: 100dvh; background: var(--bg-base);
+}
+
+/* Login */
+.login-screen {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; min-height: 100dvh; gap: var(--space-6);
+  padding: var(--space-5);
+}
+.login-title {
+  font-family: var(--font-display);
+  font-size: var(--text-3xl);
+  font-weight: 300;
+  color: var(--gold);
+  letter-spacing: 0.04em;
+}
+.login-form {
+  display: flex; flex-direction: column; gap: var(--space-3);
+  width: 100%; max-width: 320px;
+}
+.login-error { color: var(--loss); font-size: var(--text-sm); }
+
+/* Buttons */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: var(--space-2); padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-md); border: 1px solid transparent;
+  font-size: var(--text-sm); font-weight: 500;
+  transition: opacity 0.15s, background 0.15s;
+}
+.btn:disabled { opacity: 0.5; pointer-events: none; }
+.btn--primary {
+  background: var(--gold); color: var(--bg-base); border-color: var(--gold);
+}
+.btn--primary:hover { opacity: 0.85; }
+.btn--ghost {
+  background: transparent; color: var(--text-2); border-color: var(--border);
+}
+.btn--ghost:hover { background: var(--bg-elevated); color: var(--text-1); }
+.btn--danger {
+  background: transparent; color: var(--loss); border-color: var(--loss-dim);
+}
+.btn--danger:hover { background: var(--loss-dim); color: var(--text-1); }
+
+/* Input (extra specificity for overrides) */
+.input { /* inherits from global input selector above */ }
+
+/* Modal */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+  display: flex; align-items: flex-end; justify-content: center;
+  z-index: 100; padding: 0;
+}
+@media (min-width: 768px) {
+  .modal-overlay { align-items: center; padding: var(--space-5); }
+}
+.modal {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  width: 100%; max-width: 560px;
+  max-height: 90dvh; overflow-y: auto;
+  padding: var(--space-5);
+}
+@media (min-width: 768px) {
+  .modal { border-radius: var(--radius-lg); }
+}
+.modal-title {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 300;
+  color: var(--text-1);
+  margin-bottom: var(--space-4);
+}
+
+/* Badge */
+.badge {
+  display: inline-flex; align-items: center;
+  padding: 2px var(--space-2); border-radius: var(--radius-sm);
+  font-size: var(--text-xs); font-weight: 500;
+  letter-spacing: 0.04em; text-transform: uppercase;
+}
+.badge--owned   { background: rgba(78,205,196,0.15); color: var(--gain); }
+.badge--watchlist { background: rgba(201,168,76,0.15); color: var(--gold); }
+.badge--sold    { background: rgba(143,168,192,0.15); color: var(--text-2); }
+
+/* Empty state */
+.empty-state {
+  display: flex; flex-direction: column; align-items: center;
+  gap: var(--space-3); padding: var(--space-8) var(--space-5);
+  color: var(--text-3); text-align: center;
+}
+.empty-state__title { font-size: var(--text-lg); color: var(--text-2); }
+
+/* Mono numbers */
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.gain-text { color: var(--gain); }
+.loss-text { color: var(--loss); }
