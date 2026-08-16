@@ -1,5 +1,5 @@
 import { useTilt } from '../../hooks/useTilt'
-import { isSealed, isSlabbed } from '../../lib/itemTypes'
+import { ITEM_TYPE_LABELS, isSealed, isSlabbed } from '../../lib/itemTypes'
 
 const CAT_LABELS = {
   pokemon: 'Pokémon', yugioh: 'Yu-Gi-Oh!', dragonball: 'Dragon Ball Z',
@@ -12,7 +12,19 @@ const SEALED_TILT = { maxTilt: 6,  scale: 1.02 }
 
 function fmt(n) {
   if (n == null) return null
-  return '£' + Number(n).toLocaleString('en-GB', { maximumFractionDigits: 0 })
+  // Pennies only when they carry information: £1,050 but £119.95.
+  return '£' + Number(n).toLocaleString('en-GB', { minimumFractionDigits: 0, maximumFractionDigits: 2 })
+}
+
+/**
+ * Sealed product writes is_raw = true because it is ungraded, but calling it
+ * "raw" in the caption re-creates the card/sealed conflation item_type exists
+ * to remove. Sealed reads as its form; only cards talk about grading.
+ */
+function qualifier(item) {
+  if (isSealed(item.item_type)) return ITEM_TYPE_LABELS[item.item_type] ?? 'Sealed'
+  if (item.is_raw) return 'Raw'
+  return item.grade ? `${item.grade_company} ${item.grade}` : null
 }
 
 export function VaultTile({ item, onSelect }) {
@@ -69,8 +81,7 @@ export function VaultTile({ item, onSelect }) {
       <figcaption className="vault-caption">
         <span className="vault-caption__name">{item.name}</span>
         <span className="vault-caption__meta mono">
-          {fmt(item.current_value) ?? '—'}
-          {item.is_raw ? ' · raw' : item.grade ? ` · ${item.grade_company} ${item.grade}` : ''}
+          {[fmt(item.current_value) ?? '—', qualifier(item)].filter(Boolean).join(' · ')}
         </span>
       </figcaption>
     </figure>
