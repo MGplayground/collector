@@ -10,6 +10,7 @@ export function useItems(filters = {}) {
 
   const fetch = useCallback(async () => {
     setLoading(true)
+    setError(null)   // otherwise one failed fetch pins the banner for the session
     try {
       const data = await getItems(filters)
       if (filters.sortBy === 'gain_desc') {

@@ -453,3 +453,29 @@ input:focus, select:focus, textarea:focus { border-color: var(--gold); }
   .vault-tile { transition: none; transform: none; }
   .vault-tile__holo, .vault-tile__glare { display: none; }
 }
+
+/* ── Empty portfolio note ───────────────────────────────────────── */
+.summary-stat__note {
+  font-size: var(--text-sm);
+  color: var(--text-2);
+  line-height: 1.5;
+  margin-top: var(--space-1);
+  text-transform: none;
+  letter-spacing: 0;
+}
+.summary-stat--hero .summary-stat__value:not(.mono) { font-size: var(--text-xl); }
+
+/* ── Crash screen (ErrorBoundary) ───────────────────────────────── */
+.crash-screen {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: var(--space-3); min-height: 100dvh; padding: var(--space-5);
+  text-align: center; background: var(--bg-base);
+}
+.crash-screen__title { font-family: var(--font-display); font-size: var(--text-2xl); color: var(--gold); }
+.crash-screen__body { font-size: var(--text-sm); color: var(--text-2); max-width: 34ch; }
+.crash-screen__detail {
+  font-size: var(--text-xs); color: var(--text-3);
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: var(--space-2) var(--space-3);
+  max-width: 100%; overflow-x: auto;
+}

@@ -5,14 +5,18 @@ export function LogPriceForm({ item, onLog, onClose }) {
   const [price, setPrice] = useState(item.current_value ?? '')
   const [note, setNote] = useState('')
   const [saving, setSaving] = useState(false)
+  const [error, setError] = useState(null)
 
   async function handleSubmit(e) {
     e.preventDefault()
     if (!price) return
     setSaving(true)
+    setError(null)
     try {
       await onLog(Number(price), note || null)
       onClose()
+    } catch (err) {
+      setError(err.message || 'Could not log that price.')
     } finally {
       setSaving(false)
     }
@@ -31,6 +35,7 @@ export function LogPriceForm({ item, onLog, onClose }) {
           <input className="input" value={note} onChange={e => setNote(e.target.value)}
             placeholder="e.g. negotiated from £1,050 to £980" />
         </label>
+        {error && <p className="error-text" role="alert">{error}</p>}
         <div className="form-actions">
           <button type="button" className="btn btn--ghost" onClick={onClose}>Cancel</button>
           <button type="submit" className="btn btn--primary" disabled={saving}>

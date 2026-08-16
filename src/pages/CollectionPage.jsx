@@ -28,7 +28,6 @@ export function CollectionPage() {
   }, [view])
 
   function openAdd() { setFormItem({}) }
-  function openEdit(item) { setFormItem(item) }
   function closeForm() { setFormItem(null) }
 
   async function handleSave(data) {
