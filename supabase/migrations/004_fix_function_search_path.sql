@@ -1,4 +1,6 @@
--- Not yet applied to project oidnhbmhjzcrvyjjfmes.
+-- Applied to project oidnhbmhjzcrvyjjfmes on 2026-08-16. Verified afterwards:
+-- proconfig is {search_path=""}, the items_updated_at trigger is still attached,
+-- and the linter no longer reports 0011_function_search_path_mutable.
 -- Pins search_path on the updated_at trigger function (lint
 -- 0011_function_search_path_mutable), which currently resolves unqualified names
 -- against whatever search_path the calling role happens to have.
