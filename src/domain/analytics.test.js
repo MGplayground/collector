@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { computeAnalytics } from './analytics'
+import { computeAnalytics } from '../domain/analytics'
 
 const item = (over = {}) => ({
   id: crypto.randomUUID(),
