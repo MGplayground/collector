@@ -1,15 +1,9 @@
-const CATEGORY_LABELS = {
-  pokemon:    'Pokémon',
-  yugioh:     'Yu-Gi-Oh!',
-  dragonball: 'Dragon Ball Z',
-  riftbound:  'Riftbound',
-  other:      'Other',
-}
+import { categoryLabel, statusLabel } from '../../domain/item'
 
 export function StatusBadge({ status }) {
-  return <span className={`badge badge--${status}`}>{status}</span>
+  return <span className={`badge badge--${status}`}>{statusLabel(status)}</span>
 }
 
 export function CategoryBadge({ category }) {
-  return <span className="badge badge--category">{CATEGORY_LABELS[category] ?? category}</span>
+  return <span className="badge badge--category">{categoryLabel(category)}</span>
 }

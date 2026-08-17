@@ -4,6 +4,7 @@ import {
   CartesianGrid, Line, LineChart, ResponsiveContainer,
   Tooltip, XAxis, YAxis
 } from 'recharts'
+import { gradeLabel } from '../../domain/item'
 import { usePriceHistory } from '../../hooks/usePriceHistory'
 import { CategoryBadge, StatusBadge } from '../ui/Badge'
 import { Modal } from '../ui/Modal'
@@ -39,8 +40,7 @@ export function ItemDetail({ item, onEdit, onClose, onPriceLogged }) {
     note: h.note,
   }))
 
-  const gradeLabel = item.is_raw ? 'Raw / Ungraded'
-    : item.grade_company && item.grade ? `${item.grade_company} ${item.grade}` : '—'
+  const grade = gradeLabel(item) ?? '—'
 
   return (
     <>
@@ -49,7 +49,7 @@ export function ItemDetail({ item, onEdit, onClose, onPriceLogged }) {
           <div className="detail__badges">
             <StatusBadge status={item.status} />
             <CategoryBadge category={item.category} />
-            <span className="badge badge--category">{gradeLabel}</span>
+            <span className="badge badge--category">{grade}</span>
           </div>
 
           <div className="detail__stats">

@@ -1,10 +1,5 @@
 import { useTilt } from '../../hooks/useTilt'
-import { ITEM_TYPE_LABELS, isSealed, isSlabbed } from '../../lib/itemTypes'
-
-const CAT_LABELS = {
-  pokemon: 'Pokémon', yugioh: 'Yu-Gi-Oh!', dragonball: 'Dragon Ball Z',
-  riftbound: 'Riftbound', other: 'Other',
-}
+import { categoryLabel, gradeLabel, isSealed, isSlabbed } from '../../domain/item'
 
 // Cards: flat plane, wide tilt, foil. Sealed: gentle tilt, gloss sweep, no foil.
 const CARD_TILT   = { maxTilt: 15, scale: 1.04 }
@@ -14,17 +9,6 @@ function fmt(n) {
   if (n == null) return null
   // Pennies only when they carry information: £1,050 but £119.95.
   return '£' + Number(n).toLocaleString('en-GB', { minimumFractionDigits: 0, maximumFractionDigits: 2 })
-}
-
-/**
- * Sealed product writes is_raw = true because it is ungraded, but calling it
- * "raw" in the caption re-creates the card/sealed conflation item_type exists
- * to remove. Sealed reads as its form; only cards talk about grading.
- */
-function qualifier(item) {
-  if (isSealed(item.item_type)) return ITEM_TYPE_LABELS[item.item_type] ?? 'Sealed'
-  if (item.is_raw) return 'Raw'
-  return item.grade ? `${item.grade_company} ${item.grade}` : null
 }
 
 export function VaultTile({ item, onSelect }) {
@@ -41,7 +25,7 @@ export function VaultTile({ item, onSelect }) {
         <img src={item.image_url} alt="" className="vault-tile__img" loading="lazy" />
       ) : (
         <div className="vault-tile__placeholder">
-          <span className="vault-tile__placeholder-cat mono">{CAT_LABELS[item.category] ?? item.category}</span>
+          <span className="vault-tile__placeholder-cat mono">{categoryLabel(item.category)}</span>
           <span className="vault-tile__placeholder-name">{item.name}</span>
           <span className="vault-tile__placeholder-hint mono">No photo yet</span>
         </div>
@@ -81,7 +65,7 @@ export function VaultTile({ item, onSelect }) {
       <figcaption className="vault-caption">
         <span className="vault-caption__name">{item.name}</span>
         <span className="vault-caption__meta mono">
-          {[fmt(item.current_value) ?? '—', qualifier(item)].filter(Boolean).join(' · ')}
+          {[fmt(item.current_value) ?? '—', gradeLabel(item)].filter(Boolean).join(' · ')}
         </span>
       </figcaption>
     </figure>
