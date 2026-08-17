@@ -1,12 +1,14 @@
 import { useState } from 'react'
 import { Modal } from '../ui/Modal'
+import { ImageUpload } from './ImageUpload'
+import { ITEM_TYPES, ITEM_TYPE_LABELS, isSealed } from '../../lib/itemTypes'
 
 const CATEGORIES = ['pokemon','yugioh','dragonball','riftbound','other']
 const CAT_LABELS = { pokemon:'Pokémon', yugioh:'Yu-Gi-Oh!', dragonball:'Dragon Ball Z', riftbound:'Riftbound', other:'Other' }
 const STATUSES   = ['owned','watchlist','sold']
 
 const empty = {
-  name:'', category:'pokemon', status:'watchlist', is_raw:false,
+  name:'', category:'pokemon', status:'watchlist', item_type:'card', is_raw:false,
   grade_company:'PSA', grade:'', purchase_price:'', purchase_date:'',
   current_value:'', quantity:1, seller_source:'', cert_number:'',
   image_url:'', sale_price:'', sale_date:'', notes:''
@@ -18,6 +20,7 @@ function toForm(item) {
     name: item.name ?? '',
     category: item.category ?? 'pokemon',
     status: item.status ?? 'watchlist',
+    item_type: item.item_type ?? 'card',
     is_raw: item.is_raw ?? false,
     grade_company: item.grade_company ?? 'PSA',
     grade: item.grade ?? '',
@@ -35,13 +38,17 @@ function toForm(item) {
 }
 
 function toPayload(form) {
+  // Sealed product is ungraded by definition, so it always writes is_raw = true
+  // and null grade fields — that is the conflation the item_type column removes.
+  const graded = form.item_type === 'card' && !form.is_raw
   return {
     name: form.name.trim(),
     category: form.category,
     status: form.status,
-    is_raw: form.is_raw,
-    grade_company: form.is_raw ? null : (form.grade_company || null),
-    grade: form.is_raw ? null : (form.grade || null),
+    item_type: form.item_type,
+    is_raw: isSealed(form.item_type) ? true : form.is_raw,
+    grade_company: graded ? (form.grade_company || null) : null,
+    grade: graded ? (form.grade || null) : null,
     purchase_price: form.purchase_price !== '' ? Number(form.purchase_price) : null,
     purchase_date: form.purchase_date || null,
     current_value: form.current_value !== '' ? Number(form.current_value) : null,
@@ -100,11 +107,19 @@ export function ItemForm({ item, onSave, onDelete, onClose }) {
             </select>
           </label>
         </div>
-        <label className="form-label form-label--row">
-          <input type="checkbox" checked={form.is_raw} onChange={e => set('is_raw', e.target.checked)} />
-          Raw / ungraded (no grading company or grade)
+        <label className="form-label">
+          Type
+          <select className="input" value={form.item_type} onChange={e => set('item_type', e.target.value)}>
+            {ITEM_TYPES.map(t => <option key={t} value={t}>{ITEM_TYPE_LABELS[t]}</option>)}
+          </select>
         </label>
-        {!form.is_raw && (
+        {!isSealed(form.item_type) && (
+          <label className="form-label form-label--row">
+            <input type="checkbox" checked={form.is_raw} onChange={e => set('is_raw', e.target.checked)} />
+            Raw / ungraded (no grading company or grade)
+          </label>
+        )}
+        {!isSealed(form.item_type) && !form.is_raw && (
           <div className="form-row">
             <label className="form-label">
               Grading company
@@ -146,10 +161,7 @@ export function ItemForm({ item, onSave, onDelete, onClose }) {
             <input className="input" value={form.cert_number} onChange={e => set('cert_number', e.target.value)} placeholder="PSA cert #" />
           </label>
         </div>
-        <label className="form-label">
-          Image URL
-          <input className="input" type="url" value={form.image_url} onChange={e => set('image_url', e.target.value)} placeholder="https://…" />
-        </label>
+        <ImageUpload value={form.image_url} onChange={url => set('image_url', url)} />
         {form.status === 'sold' && (
           <div className="form-row">
             <label className="form-label">

@@ -8,11 +8,29 @@ const SORTS      = [
 ]
 const CAT_LABELS = { pokemon: 'Pokémon', yugioh: 'Yu-Gi-Oh!', dragonball: 'Dragon Ball Z', riftbound: 'Riftbound', other: 'Other' }
 
-export function ItemFilters({ filters, onChange }) {
+export function ItemFilters({ filters, onChange, view, onViewChange }) {
   function set(key, value) { onChange({ ...filters, [key]: value || undefined }) }
 
   return (
     <div className="item-filters">
+      <div className="view-toggle" role="group" aria-label="Collection view">
+        <button
+          type="button"
+          className={`view-toggle__btn${view === 'list' ? ' view-toggle__btn--active' : ''}`}
+          aria-pressed={view === 'list'}
+          onClick={() => onViewChange('list')}
+        >
+          List
+        </button>
+        <button
+          type="button"
+          className={`view-toggle__btn${view === 'vault' ? ' view-toggle__btn--active' : ''}`}
+          aria-pressed={view === 'vault'}
+          onClick={() => onViewChange('vault')}
+        >
+          Vault
+        </button>
+      </div>
       <select className="item-filters__select" value={filters.status ?? ''} onChange={e => set('status', e.target.value)}>
         <option value="">All statuses</option>
         {STATUSES.filter(Boolean).map(s => <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>)}
