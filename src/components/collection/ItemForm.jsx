@@ -66,6 +66,7 @@ export function ItemForm({ item, onSave, onDelete, onClose }) {
   const [form, setForm] = useState(toForm(item))
   const [saving, setSaving] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState(false)
+  const [error, setError] = useState(null)
 
   function set(key, val) { setForm(prev => ({ ...prev, [key]: val })) }
 
@@ -73,17 +74,27 @@ export function ItemForm({ item, onSave, onDelete, onClose }) {
     e.preventDefault()
     if (!form.name.trim()) return
     setSaving(true)
+    setError(null)
     try {
       await onSave(toPayload(form))
       onClose()
+    } catch (err) {
+      // Without this the modal just stops spinning and says nothing, which is
+      // indistinguishable from a successful save that failed to close.
+      setError(err.message || 'Could not save. Check your connection and try again.')
     } finally {
       setSaving(false)
     }
   }
 
   async function handleDelete() {
-    await onDelete(item.id)
-    onClose()
+    setError(null)
+    try {
+      await onDelete(item.id)
+      onClose()
+    } catch (err) {
+      setError(err.message || 'Could not delete this item.')
+    }
   }
 
   return (
@@ -178,6 +189,7 @@ export function ItemForm({ item, onSave, onDelete, onClose }) {
           Notes
           <textarea className="input" rows={3} value={form.notes} onChange={e => set('notes', e.target.value)} />
         </label>
+        {error && <p className="error-text" role="alert">{error}</p>}
         <div className="form-actions">
           {item && !confirmDelete && (
             <button type="button" className="btn btn--danger" onClick={() => setConfirmDelete(true)}>Delete</button>

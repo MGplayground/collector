@@ -27,7 +27,14 @@ export async function logPrice(itemId, price, note = null) {
     .eq('id', itemId)
   if (itemError) {
     // Compensating rollback: remove the orphaned price_history row.
-    await supabase.from('price_history').delete().eq('id', inserted.id)
+    const { error: rollbackError } = await supabase
+      .from('price_history').delete().eq('id', inserted.id)
+    if (rollbackError) {
+      // The rollback is the only thing preventing a dangling row, so its own
+      // failure must not pass silently.
+      console.error('logPrice rollback failed; price_history row %s is orphaned',
+        inserted.id, rollbackError)
+    }
     throw itemError
   }
 }

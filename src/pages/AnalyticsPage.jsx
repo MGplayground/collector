@@ -9,12 +9,23 @@ import { Highlights } from '../components/analytics/Highlights'
 export function AnalyticsPage() {
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
   useEffect(() => {
-    getAnalyticsData().then(d => { setData(d); setLoading(false) })
+    // No catch here previously, so a failed load left "Loading…" on screen forever.
+    getAnalyticsData()
+      .then(setData)
+      .catch(err => setError(err.message || 'Could not load analytics.'))
+      .finally(() => setLoading(false))
   }, [])
 
-  if (loading) return <p style={{ color: 'var(--text-3)', padding: 'var(--space-5)' }}>Loading…</p>
+  if (loading) return <p className="item-list-loading">Loading…</p>
+  if (error) return (
+    <div>
+      <div className="page-header"><h2 className="page-title">Analytics</h2></div>
+      <p className="error-text" role="alert">{error}</p>
+    </div>
+  )
   if (!data) return null
 
   return (
