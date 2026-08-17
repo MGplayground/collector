@@ -1,13 +1,16 @@
 import { format } from 'date-fns'
-import { useState } from 'react'
-import {
-  CartesianGrid, Line, LineChart, ResponsiveContainer,
-  Tooltip, XAxis, YAxis
-} from 'recharts'
+import { lazy, useState } from 'react'
 import { usePriceHistory } from '../../hooks/usePriceHistory'
 import { CategoryBadge, StatusBadge } from '../ui/Badge'
+import { LazyChunk } from '../ui/ErrorBoundary'
 import { Modal } from '../ui/Modal'
 import { LogPriceForm } from './LogPriceForm'
+
+// `recharts` is the bulk of the bundle and nothing on the Collection list needs it,
+// so the chart is fetched only once a card is actually opened.
+const PriceHistoryChart = lazy(() =>
+  import('./PriceHistoryChart').then(m => ({ default: m.PriceHistoryChart }))
+)
 
 function fmt(n) {
   if (n == null) return '—'
@@ -81,24 +84,16 @@ export function ItemDetail({ item, onEdit, onClose, onPriceLogged }) {
           ) : chartData.length < 2 ? (
             <p className="detail__no-chart">Add at least two price points to see the chart.</p>
           ) : (
-            <div className="detail__chart">
-              <ResponsiveContainer width="100%" height={200}>
-                <LineChart data={chartData} margin={{ top: 4, right: 4, bottom: 0, left: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                  <XAxis dataKey="date" tick={{ fill: 'var(--text-3)', fontSize: 11 }} />
-                  <YAxis
-                    tick={{ fill: 'var(--text-3)', fontSize: 11 }}
-                    tickFormatter={v => `£${v.toLocaleString('en-GB')}`}
-                    width={64}
-                  />
-                  <Tooltip
-                    contentStyle={{ background: 'var(--bg-elevated)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', color: 'var(--text-1)' }}
-                    formatter={v => [`£${Number(v).toLocaleString('en-GB', { minimumFractionDigits: 2 })}`, 'Value']}
-                  />
-                  <Line type="monotone" dataKey="price" stroke="var(--gold)" strokeWidth={2} dot={{ fill: 'var(--gold)', r: 4 }} activeDot={{ r: 6 }} />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
+            <LazyChunk
+              loading={<p className="detail__loading">Loading…</p>}
+              error={
+                <p className="detail__no-chart" role="alert">
+                  Couldn’t load the chart. Reload the app to try again.
+                </p>
+              }
+            >
+              <PriceHistoryChart data={chartData} />
+            </LazyChunk>
           )}
 
           {history.length > 0 && (
