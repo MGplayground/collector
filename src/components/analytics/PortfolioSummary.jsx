@@ -1,9 +1,4 @@
-function fmt(n, showSign = false) {
-  const abs = Math.abs(n)
-  const str = '£' + abs.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-  if (showSign) return (n >= 0 ? '+' : '−') + str
-  return str
-}
+import { formatMoney, formatPct } from '../../domain/money'
 
 export function PortfolioSummary({ data }) {
   const {
@@ -19,7 +14,7 @@ export function PortfolioSummary({ data }) {
       <span className="summary-stat__label">
         Watchlist ({watchlistCount} {watchlistCount === 1 ? 'item' : 'items'})
       </span>
-      <span className="summary-stat__value mono">{fmt(watchlistValue)}</span>
+      <span className="summary-stat__value mono">{formatMoney(watchlistValue)}</span>
     </div>
   )
 
@@ -44,23 +39,23 @@ export function PortfolioSummary({ data }) {
     <div className="summary-grid">
       <div className="summary-stat summary-stat--hero">
         <span className="summary-stat__label">Cost basis</span>
-        <span className="summary-stat__value mono">{fmt(totalInvested)}</span>
+        <span className="summary-stat__value mono">{formatMoney(totalInvested)}</span>
       </div>
       <div className="summary-stat summary-stat--hero">
         <span className="summary-stat__label">Portfolio value ({heldCount} owned)</span>
-        <span className="summary-stat__value mono">{fmt(totalValue)}</span>
+        <span className="summary-stat__value mono">{formatMoney(totalValue)}</span>
       </div>
       <div className="summary-stat">
         <span className="summary-stat__label">Unrealized gain</span>
         <span className={`summary-stat__value mono ${gainClass}`}>
-          {fmt(totalGain, true)}
-          {totalInvested > 0 && ` (${gainPct >= 0 ? '+' : ''}${gainPct.toFixed(1)}%)`}
+          {formatMoney(totalGain, { signed: true })}
+          {totalInvested > 0 && ` (${formatPct(gainPct)})`}
         </span>
       </div>
       <div className="summary-stat">
         <span className="summary-stat__label">Realized gain</span>
         <span className={`summary-stat__value mono ${realizedGain >= 0 ? 'gain-text' : 'loss-text'}`}>
-          {fmt(realizedGain, true)}
+          {formatMoney(realizedGain, { signed: true })}
         </span>
       </div>
       {watchlistStat}

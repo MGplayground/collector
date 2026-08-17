@@ -1,3 +1,4 @@
+import { formatMoneyCompact } from '../../domain/money'
 import { useTilt } from '../../hooks/useTilt'
 import { ITEM_TYPE_LABELS, isSealed, isSlabbed } from '../../lib/itemTypes'
 
@@ -9,12 +10,6 @@ const CAT_LABELS = {
 // Cards: flat plane, wide tilt, foil. Sealed: gentle tilt, gloss sweep, no foil.
 const CARD_TILT   = { maxTilt: 15, scale: 1.04 }
 const SEALED_TILT = { maxTilt: 6,  scale: 1.02 }
-
-function fmt(n) {
-  if (n == null) return null
-  // Pennies only when they carry information: £1,050 but £119.95.
-  return '£' + Number(n).toLocaleString('en-GB', { minimumFractionDigits: 0, maximumFractionDigits: 2 })
-}
 
 /**
  * Sealed product writes is_raw = true because it is ungraded, but calling it
@@ -81,7 +76,7 @@ export function VaultTile({ item, onSelect }) {
       <figcaption className="vault-caption">
         <span className="vault-caption__name">{item.name}</span>
         <span className="vault-caption__meta mono">
-          {[fmt(item.current_value) ?? '—', qualifier(item)].filter(Boolean).join(' · ')}
+          {[formatMoneyCompact(item.current_value), qualifier(item)].filter(Boolean).join(' · ')}
         </span>
       </figcaption>
     </figure>

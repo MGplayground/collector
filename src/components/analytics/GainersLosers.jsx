@@ -1,6 +1,4 @@
-function fmt(n) {
-  return '£' + Math.abs(n).toLocaleString('en-GB', { minimumFractionDigits: 2 })
-}
+import { formatMoney, formatPct, gain } from '../../domain/money'
 
 export function GainersLosers({ withGain }) {
   if (!withGain.length) return null
@@ -16,8 +14,8 @@ export function GainersLosers({ withGain }) {
           {gainers.map(item => (
             <div key={item.id} className="gainer-row">
               <span className="gainer-row__name">{item.name}</span>
-              <span className="gainer-row__pct mono gain-text">+{item.gainPct.toFixed(1)}%</span>
-              <span className="gainer-row__abs mono gain-text">+{fmt(item.current_value - item.purchase_price)}</span>
+              <span className="gainer-row__pct mono gain-text">{formatPct(item.gainPct)}</span>
+              <span className="gainer-row__abs mono gain-text">{formatMoney(gain(item), { signed: true })}</span>
             </div>
           ))}
         </>
@@ -28,8 +26,8 @@ export function GainersLosers({ withGain }) {
           {losers.map(item => (
             <div key={item.id} className="gainer-row">
               <span className="gainer-row__name">{item.name}</span>
-              <span className="gainer-row__pct mono loss-text">{item.gainPct.toFixed(1)}%</span>
-              <span className="gainer-row__abs mono loss-text">−{fmt(item.purchase_price - item.current_value)}</span>
+              <span className="gainer-row__pct mono loss-text">{formatPct(item.gainPct)}</span>
+              <span className="gainer-row__abs mono loss-text">{formatMoney(gain(item), { signed: true })}</span>
             </div>
           ))}
         </>

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { format, parseISO, subDays } from 'date-fns'
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import { formatMoney } from '../../domain/money'
 
 const RANGES = [
   { label: '1W', days: 7 },
@@ -55,7 +56,7 @@ export function PortfolioChart({ timeline }) {
             />
             <Tooltip
               contentStyle={{ background: 'var(--bg-elevated)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', color: 'var(--text-1)' }}
-              formatter={v => [`£${Number(v).toLocaleString('en-GB', { minimumFractionDigits: 2 })}`, 'Portfolio']}
+              formatter={v => [formatMoney(v), 'Portfolio']}
             />
             <Line type="monotone" dataKey="total" stroke="var(--gold)" strokeWidth={2} dot={{ fill: 'var(--gold)', r: 3 }} />
           </LineChart>

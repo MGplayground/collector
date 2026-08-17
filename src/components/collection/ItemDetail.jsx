@@ -4,23 +4,13 @@ import {
   CartesianGrid, Line, LineChart, ResponsiveContainer,
   Tooltip, XAxis, YAxis
 } from 'recharts'
+import {
+  formatMoney, formatMoneyCompact, formatPct, gain, gainPct,
+} from '../../domain/money'
 import { usePriceHistory } from '../../hooks/usePriceHistory'
 import { CategoryBadge, StatusBadge } from '../ui/Badge'
 import { Modal } from '../ui/Modal'
 import { LogPriceForm } from './LogPriceForm'
-
-function fmt(n) {
-  if (n == null) return '—'
-  return '£' + Number(n).toLocaleString('en-GB', { minimumFractionDigits: 2 })
-}
-
-function gainInfo(item) {
-  if (item.purchase_price == null || item.current_value == null)
-    return { abs: null, pct: null }
-  const abs = item.current_value - item.purchase_price
-  const pct = (abs / item.purchase_price) * 100
-  return { abs, pct }
-}
 
 export function ItemDetail({ item, onEdit, onClose, onPriceLogged }) {
   const { history, loading, logPrice } = usePriceHistory(item.id)
@@ -30,7 +20,8 @@ export function ItemDetail({ item, onEdit, onClose, onPriceLogged }) {
     await logPrice(price, note)
     onPriceLogged?.()
   }
-  const { abs, pct } = gainInfo(item)
+  const abs = gain(item)
+  const pct = gainPct(item)
   const gainClass = abs == null ? '' : abs >= 0 ? 'gain-text' : 'loss-text'
 
   const chartData = history.map(h => ({
@@ -55,17 +46,18 @@ export function ItemDetail({ item, onEdit, onClose, onPriceLogged }) {
           <div className="detail__stats">
             <div className="detail__stat">
               <span className="detail__stat-label">Current value</span>
-              <span className="detail__stat-value mono">{fmt(item.current_value)}</span>
+              <span className="detail__stat-value mono">{formatMoney(item.current_value)}</span>
             </div>
             <div className="detail__stat">
               <span className="detail__stat-label">Paid</span>
-              <span className="detail__stat-value mono">{fmt(item.purchase_price)}</span>
+              <span className="detail__stat-value mono">{formatMoney(item.purchase_price)}</span>
             </div>
             {abs != null && (
               <div className="detail__stat">
                 <span className="detail__stat-label">Gain / loss</span>
                 <span className={`detail__stat-value mono ${gainClass}`}>
-                  {abs >= 0 ? '+' : ''}{fmt(abs)} ({pct >= 0 ? '+' : ''}{pct.toFixed(1)}%)
+                  {formatMoney(abs, { signed: true })}
+                  {pct != null && ` (${formatPct(pct)})`}
                 </span>
               </div>
             )}
@@ -88,12 +80,12 @@ export function ItemDetail({ item, onEdit, onClose, onPriceLogged }) {
                   <XAxis dataKey="date" tick={{ fill: 'var(--text-3)', fontSize: 11 }} />
                   <YAxis
                     tick={{ fill: 'var(--text-3)', fontSize: 11 }}
-                    tickFormatter={v => `£${v.toLocaleString('en-GB')}`}
+                    tickFormatter={v => formatMoneyCompact(v)}
                     width={64}
                   />
                   <Tooltip
                     contentStyle={{ background: 'var(--bg-elevated)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', color: 'var(--text-1)' }}
-                    formatter={v => [`£${Number(v).toLocaleString('en-GB', { minimumFractionDigits: 2 })}`, 'Value']}
+                    formatter={v => [formatMoney(v), 'Value']}
                   />
                   <Line type="monotone" dataKey="price" stroke="var(--gold)" strokeWidth={2} dot={{ fill: 'var(--gold)', r: 4 }} activeDot={{ r: 6 }} />
                 </LineChart>
@@ -106,7 +98,7 @@ export function ItemDetail({ item, onEdit, onClose, onPriceLogged }) {
               {[...history].reverse().map(h => (
                 <div key={h.id} className="detail__log-entry">
                   <span className="detail__log-date mono">{format(new Date(h.recorded_at), 'dd MMM yyyy')}</span>
-                  <span className="detail__log-price mono">{fmt(h.price)}</span>
+                  <span className="detail__log-price mono">{formatMoney(h.price)}</span>
                   {h.note && <span className="detail__log-note">{h.note}</span>}
                 </div>
               ))}

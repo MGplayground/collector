@@ -1,5 +1,6 @@
 import { getItems } from './items'
 import { getAllPriceHistory } from './priceHistory'
+import { gainPct } from '../domain/money'
 import { held, heldOn, isSold, isWatchlist, sumBy, watched } from '../domain/portfolio'
 
 export async function getAnalyticsData() {
@@ -34,7 +35,7 @@ export function computeAnalytics(items, allHistory) {
 
   const withGain = owned
     .filter(i => i.purchase_price && i.current_value)
-    .map(i => ({ ...i, gainPct: ((i.current_value - i.purchase_price) / i.purchase_price) * 100 }))
+    .map(i => ({ ...i, gainPct: gainPct(i) }))
     .sort((a, b) => b.gainPct - a.gainPct)
 
   const mostValuable = owned
