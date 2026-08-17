@@ -1,21 +1,11 @@
+import { gradeLabel } from '../../domain/item'
+import { formatMoney, formatPct, gainPct } from '../../domain/money'
 import { CategoryBadge, StatusBadge } from '../ui/Badge'
-
-function fmt(n) {
-  if (n == null) return '—'
-  return '£' + Number(n).toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-}
-
-function gainPct(item) {
-  if (item.purchase_price == null || item.current_value == null) return null
-  return ((item.current_value - item.purchase_price) / item.purchase_price) * 100
-}
 
 export function ItemCard({ item, onClick }) {
   const pct = gainPct(item)
   const pctClass = pct == null ? '' : pct >= 0 ? 'gain-text' : 'loss-text'
-  const gradeLabel = item.is_raw ? 'Raw' : item.grade_company && item.grade
-    ? `${item.grade_company} ${item.grade}`
-    : '—'
+  const grade = gradeLabel(item) ?? '—'
 
   return (
     <div className="item-card" onClick={() => onClick(item)}>
@@ -28,15 +18,13 @@ export function ItemCard({ item, onClick }) {
         <div className="item-card__meta">
           <StatusBadge status={item.status} />
           <CategoryBadge category={item.category} />
-          <span className="item-card__grade mono">{gradeLabel}</span>
+          <span className="item-card__grade mono">{grade}</span>
         </div>
         <p className="item-card__name">{item.name}</p>
         <div className="item-card__values">
-          <span className="item-card__value mono">{fmt(item.current_value)}</span>
+          <span className="item-card__value mono">{formatMoney(item.current_value)}</span>
           {pct != null && (
-            <span className={`item-card__pct mono ${pctClass}`}>
-              {pct >= 0 ? '+' : ''}{pct.toFixed(1)}%
-            </span>
+            <span className={`item-card__pct mono ${pctClass}`}>{formatPct(pct)}</span>
           )}
         </div>
       </div>

@@ -1,6 +1,4 @@
-function fmt(n) {
-  return '£' + Math.abs(n).toLocaleString('en-GB', { minimumFractionDigits: 2 })
-}
+import { formatMoney, formatPct } from '../../domain/money'
 
 export function Highlights({ mostValuable, trending }) {
   const hasValuable = mostValuable.length > 0
@@ -16,7 +14,7 @@ export function Highlights({ mostValuable, trending }) {
           {mostValuable.map(item => (
             <div key={item.id} className="gainer-row">
               <span className="gainer-row__name">{item.name}</span>
-              <span className="gainer-row__abs mono">{fmt(item.current_value)}</span>
+              <span className="gainer-row__abs mono">{formatMoney(item.current_value)}</span>
             </div>
           ))}
         </>
@@ -28,10 +26,10 @@ export function Highlights({ mostValuable, trending }) {
             <div key={item.id} className="gainer-row">
               <span className="gainer-row__name">{item.name}</span>
               <span className={`gainer-row__pct mono ${item.recentMove >= 0 ? 'gain-text' : 'loss-text'}`}>
-                {item.recentMove >= 0 ? '+' : '−'}{fmt(item.recentMove)}
+                {formatMoney(item.recentMove, { signed: true })}
               </span>
               <span className={`gainer-row__abs mono ${item.recentMovePct >= 0 ? 'gain-text' : 'loss-text'}`}>
-                {item.recentMovePct >= 0 ? '+' : ''}{item.recentMovePct.toFixed(1)}%
+                {formatPct(item.recentMovePct)}
               </span>
             </div>
           ))}

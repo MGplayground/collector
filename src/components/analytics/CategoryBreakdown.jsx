@@ -1,12 +1,14 @@
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
+import { categoryLabel } from '../../domain/item'
+import { formatMoney } from '../../domain/money'
 
+// Slice colour is styling, not vocabulary — the labels come from the domain.
 const COLORS = { pokemon:'#4ecdc4', yugioh:'#c9a84c', dragonball:'#e07a5f', riftbound:'#8fa8c0', other:'#4d6a82' }
-const LABELS = { pokemon:'Pokémon', yugioh:'Yu-Gi-Oh!', dragonball:'Dragon Ball Z', riftbound:'Riftbound', other:'Other' }
 
 export function CategoryBreakdown({ byCategory }) {
   const data = Object.entries(byCategory)
     .filter(([, v]) => v > 0)
-    .map(([key, value]) => ({ name: LABELS[key] ?? key, value, color: COLORS[key] ?? '#4d6a82' }))
+    .map(([key, value]) => ({ name: categoryLabel(key) ?? key, value, color: COLORS[key] ?? '#4d6a82' }))
 
   if (!data.length) return null
 
@@ -20,7 +22,7 @@ export function CategoryBreakdown({ byCategory }) {
           </Pie>
           <Tooltip
             contentStyle={{ background: 'var(--bg-elevated)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', color: 'var(--text-1)' }}
-            formatter={v => [`£${Number(v).toLocaleString('en-GB', {minimumFractionDigits:2})}`, '']}
+            formatter={v => [formatMoney(v), '']}
           />
           <Legend wrapperStyle={{ fontSize: 12, color: 'var(--text-2)' }} />
         </PieChart>

@@ -1,26 +1,18 @@
 import { format } from 'date-fns'
-import { useState } from 'react'
-import {
-  CartesianGrid, Line, LineChart, ResponsiveContainer,
-  Tooltip, XAxis, YAxis
-} from 'recharts'
+import { lazy, useState } from 'react'
+import { gradeLabel } from '../../domain/item'
+import { formatMoney, formatPct, gain, gainPct } from '../../domain/money'
 import { usePriceHistory } from '../../hooks/usePriceHistory'
 import { CategoryBadge, StatusBadge } from '../ui/Badge'
+import { LazyChunk } from '../ui/ErrorBoundary'
 import { Modal } from '../ui/Modal'
 import { LogPriceForm } from './LogPriceForm'
 
-function fmt(n) {
-  if (n == null) return '—'
-  return '£' + Number(n).toLocaleString('en-GB', { minimumFractionDigits: 2 })
-}
-
-function gainInfo(item) {
-  if (item.purchase_price == null || item.current_value == null)
-    return { abs: null, pct: null }
-  const abs = item.current_value - item.purchase_price
-  const pct = (abs / item.purchase_price) * 100
-  return { abs, pct }
-}
+// `recharts` is the bulk of the bundle and nothing on the Collection list needs it,
+// so the chart is fetched only once a card is actually opened.
+const PriceHistoryChart = lazy(() =>
+  import('./PriceHistoryChart').then(m => ({ default: m.PriceHistoryChart }))
+)
 
 export function ItemDetail({ item, onEdit, onClose, onPriceLogged }) {
   const { history, loading, logPrice } = usePriceHistory(item.id)
@@ -30,7 +22,8 @@ export function ItemDetail({ item, onEdit, onClose, onPriceLogged }) {
     await logPrice(price, note)
     onPriceLogged?.()
   }
-  const { abs, pct } = gainInfo(item)
+  const abs = gain(item)
+  const pct = gainPct(item)
   const gainClass = abs == null ? '' : abs >= 0 ? 'gain-text' : 'loss-text'
 
   const chartData = history.map(h => ({
@@ -39,8 +32,7 @@ export function ItemDetail({ item, onEdit, onClose, onPriceLogged }) {
     note: h.note,
   }))
 
-  const gradeLabel = item.is_raw ? 'Raw / Ungraded'
-    : item.grade_company && item.grade ? `${item.grade_company} ${item.grade}` : '—'
+  const grade = gradeLabel(item) ?? '—'
 
   return (
     <>
@@ -49,23 +41,24 @@ export function ItemDetail({ item, onEdit, onClose, onPriceLogged }) {
           <div className="detail__badges">
             <StatusBadge status={item.status} />
             <CategoryBadge category={item.category} />
-            <span className="badge badge--category">{gradeLabel}</span>
+            <span className="badge badge--category">{grade}</span>
           </div>
 
           <div className="detail__stats">
             <div className="detail__stat">
               <span className="detail__stat-label">Current value</span>
-              <span className="detail__stat-value mono">{fmt(item.current_value)}</span>
+              <span className="detail__stat-value mono">{formatMoney(item.current_value)}</span>
             </div>
             <div className="detail__stat">
               <span className="detail__stat-label">Paid</span>
-              <span className="detail__stat-value mono">{fmt(item.purchase_price)}</span>
+              <span className="detail__stat-value mono">{formatMoney(item.purchase_price)}</span>
             </div>
             {abs != null && (
               <div className="detail__stat">
                 <span className="detail__stat-label">Gain / loss</span>
                 <span className={`detail__stat-value mono ${gainClass}`}>
-                  {abs >= 0 ? '+' : ''}{fmt(abs)} ({pct >= 0 ? '+' : ''}{pct.toFixed(1)}%)
+                  {formatMoney(abs, { signed: true })}
+                  {pct != null && ` (${formatPct(pct)})`}
                 </span>
               </div>
             )}
@@ -81,24 +74,16 @@ export function ItemDetail({ item, onEdit, onClose, onPriceLogged }) {
           ) : chartData.length < 2 ? (
             <p className="detail__no-chart">Add at least two price points to see the chart.</p>
           ) : (
-            <div className="detail__chart">
-              <ResponsiveContainer width="100%" height={200}>
-                <LineChart data={chartData} margin={{ top: 4, right: 4, bottom: 0, left: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                  <XAxis dataKey="date" tick={{ fill: 'var(--text-3)', fontSize: 11 }} />
-                  <YAxis
-                    tick={{ fill: 'var(--text-3)', fontSize: 11 }}
-                    tickFormatter={v => `£${v.toLocaleString('en-GB')}`}
-                    width={64}
-                  />
-                  <Tooltip
-                    contentStyle={{ background: 'var(--bg-elevated)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', color: 'var(--text-1)' }}
-                    formatter={v => [`£${Number(v).toLocaleString('en-GB', { minimumFractionDigits: 2 })}`, 'Value']}
-                  />
-                  <Line type="monotone" dataKey="price" stroke="var(--gold)" strokeWidth={2} dot={{ fill: 'var(--gold)', r: 4 }} activeDot={{ r: 6 }} />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
+            <LazyChunk
+              loading={<p className="detail__loading">Loading…</p>}
+              error={
+                <p className="detail__no-chart" role="alert">
+                  Couldn’t load the chart. Reload the app to try again.
+                </p>
+              }
+            >
+              <PriceHistoryChart data={chartData} />
+            </LazyChunk>
           )}
 
           {history.length > 0 && (
@@ -106,7 +91,7 @@ export function ItemDetail({ item, onEdit, onClose, onPriceLogged }) {
               {[...history].reverse().map(h => (
                 <div key={h.id} className="detail__log-entry">
                   <span className="detail__log-date mono">{format(new Date(h.recorded_at), 'dd MMM yyyy')}</span>
-                  <span className="detail__log-price mono">{fmt(h.price)}</span>
+                  <span className="detail__log-price mono">{formatMoney(h.price)}</span>
                   {h.note && <span className="detail__log-note">{h.note}</span>}
                 </div>
               ))}

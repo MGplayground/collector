@@ -7,6 +7,7 @@
  * backend to be tested — CI proved the point by failing on exactly that.
  */
 
+import { gainPct } from './money'
 import { held, heldOn, isSold, isWatchlist, sumBy, watched } from './portfolio'
 
 export function computeAnalytics(items, allHistory) {
@@ -32,7 +33,7 @@ export function computeAnalytics(items, allHistory) {
 
   const withGain = owned
     .filter(i => i.purchase_price && i.current_value)
-    .map(i => ({ ...i, gainPct: ((i.current_value - i.purchase_price) / i.purchase_price) * 100 }))
+    .map(i => ({ ...i, gainPct: gainPct(i) }))
     .sort((a, b) => b.gainPct - a.gainPct)
 
   const mostValuable = owned
