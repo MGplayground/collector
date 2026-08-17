@@ -1,14 +1,13 @@
 import { useState } from 'react'
 import { Modal } from '../ui/Modal'
 import { ImageUpload } from './ImageUpload'
-import { ITEM_TYPES, ITEM_TYPE_LABELS, isSealed } from '../../lib/itemTypes'
-
-const CATEGORIES = ['pokemon','yugioh','dragonball','riftbound','other']
-const CAT_LABELS = { pokemon:'Pokémon', yugioh:'Yu-Gi-Oh!', dragonball:'Dragon Ball Z', riftbound:'Riftbound', other:'Other' }
-const STATUSES   = ['owned','watchlist','sold']
+import {
+  CARD, CATEGORIES, ITEM_TYPES, SOLD, STATUSES, WATCHLIST,
+  categoryLabel, isSealed, itemTypeLabel, statusLabel,
+} from '../../domain/item'
 
 const empty = {
-  name:'', category:'pokemon', status:'watchlist', item_type:'card', is_raw:false,
+  name:'', category:'pokemon', status:WATCHLIST, item_type:CARD, is_raw:false,
   grade_company:'PSA', grade:'', purchase_price:'', purchase_date:'',
   current_value:'', quantity:1, seller_source:'', cert_number:'',
   image_url:'', sale_price:'', sale_date:'', notes:''
@@ -19,8 +18,8 @@ function toForm(item) {
   return {
     name: item.name ?? '',
     category: item.category ?? 'pokemon',
-    status: item.status ?? 'watchlist',
-    item_type: item.item_type ?? 'card',
+    status: item.status ?? WATCHLIST,
+    item_type: item.item_type ?? CARD,
     is_raw: item.is_raw ?? false,
     grade_company: item.grade_company ?? 'PSA',
     grade: item.grade ?? '',
@@ -40,7 +39,7 @@ function toForm(item) {
 function toPayload(form) {
   // Sealed product is ungraded by definition, so it always writes is_raw = true
   // and null grade fields — that is the conflation the item_type column removes.
-  const graded = form.item_type === 'card' && !form.is_raw
+  const graded = form.item_type === CARD && !form.is_raw
   return {
     name: form.name.trim(),
     category: form.category,
@@ -56,8 +55,8 @@ function toPayload(form) {
     seller_source: form.seller_source || null,
     cert_number: form.cert_number || null,
     image_url: form.image_url || null,
-    sale_price: form.status === 'sold' && form.sale_price !== '' ? Number(form.sale_price) : null,
-    sale_date: form.status === 'sold' ? (form.sale_date || null) : null,
+    sale_price: form.status === SOLD && form.sale_price !== '' ? Number(form.sale_price) : null,
+    sale_date: form.status === SOLD ? (form.sale_date || null) : null,
     notes: form.notes || null,
   }
 }
@@ -108,20 +107,20 @@ export function ItemForm({ item, onSave, onDelete, onClose }) {
           <label className="form-label">
             Category
             <select className="input" value={form.category} onChange={e => set('category', e.target.value)}>
-              {CATEGORIES.map(c => <option key={c} value={c}>{CAT_LABELS[c]}</option>)}
+              {CATEGORIES.map(c => <option key={c} value={c}>{categoryLabel(c)}</option>)}
             </select>
           </label>
           <label className="form-label">
             Status
             <select className="input" value={form.status} onChange={e => set('status', e.target.value)}>
-              {STATUSES.map(s => <option key={s} value={s}>{s.charAt(0).toUpperCase()+s.slice(1)}</option>)}
+              {STATUSES.map(s => <option key={s} value={s}>{statusLabel(s)}</option>)}
             </select>
           </label>
         </div>
         <label className="form-label">
           Type
           <select className="input" value={form.item_type} onChange={e => set('item_type', e.target.value)}>
-            {ITEM_TYPES.map(t => <option key={t} value={t}>{ITEM_TYPE_LABELS[t]}</option>)}
+            {ITEM_TYPES.map(t => <option key={t} value={t}>{itemTypeLabel(t)}</option>)}
           </select>
         </label>
         {!isSealed(form.item_type) && (
@@ -173,7 +172,7 @@ export function ItemForm({ item, onSave, onDelete, onClose }) {
           </label>
         </div>
         <ImageUpload value={form.image_url} onChange={url => set('image_url', url)} />
-        {form.status === 'sold' && (
+        {form.status === SOLD && (
           <div className="form-row">
             <label className="form-label">
               Sale price (£)

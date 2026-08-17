@@ -4,11 +4,12 @@
  * This exists because the answer was previously re-derived in each place that
  * needed it, and one of those derivations (`status !== 'sold'`) quietly counted
  * watchlist items as part of the portfolio.
+ *
+ * The status values themselves live in `item.js`, which owns the enum vocabulary;
+ * this module owns the policy applied to them.
  */
 
-export const OWNED = 'owned'
-export const WATCHLIST = 'watchlist'
-export const SOLD = 'sold'
+import { OWNED, SOLD, WATCHLIST } from './item'
 
 export const isOwned = item => item.status === OWNED
 export const isWatchlist = item => item.status === WATCHLIST
