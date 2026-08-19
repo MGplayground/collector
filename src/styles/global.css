@@ -479,3 +479,92 @@ input:focus, select:focus, textarea:focus { border-color: var(--gold); }
   border-radius: var(--radius-sm); padding: var(--space-2) var(--space-3);
   max-width: 100%; overflow-x: auto;
 }
+
+/* ── Resale: intake ─────────────────────────────────────────────── */
+
+/* Category-specific attribute block in ResaleItemForm */
+.resale-attrs {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  display: flex; flex-direction: column; gap: var(--space-3);
+}
+.resale-attrs__legend {
+  padding: 0 var(--space-2);
+  font-size: var(--text-xs); color: var(--gold);
+  letter-spacing: 0.08em; text-transform: uppercase;
+}
+.resale-attrs__hint { font-size: var(--text-xs); color: var(--text-3); }
+.resale-attrs__grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
+
+/* Photo manager */
+.resale-photos { display: flex; flex-direction: column; gap: var(--space-2); }
+.resale-photos__head { display: flex; align-items: baseline; justify-content: space-between; }
+.resale-photos__count { font-size: var(--text-xs); color: var(--text-3); }
+.resale-photos__input { display: none; }
+.resale-photos__actions { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
+.resale-photos__hint { font-size: var(--text-xs); color: var(--text-3); }
+.resale-photos__warn {
+  font-size: var(--text-sm); color: var(--gold); line-height: 1.4;
+  background: rgba(201,168,76,0.1);
+  border: 1px solid var(--gold-dim); border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
+}
+.resale-photos__grid {
+  list-style: none; display: grid; gap: var(--space-2);
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+}
+
+.resale-photo {
+  position: relative;
+  display: flex; flex-direction: column; gap: var(--space-1);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-1);
+}
+.resale-photo__img {
+  width: 100%; aspect-ratio: 1; object-fit: cover;
+  border-radius: var(--radius-sm); background: var(--bg-base);
+}
+.resale-photo__tag {
+  position: absolute; top: var(--space-2); left: var(--space-2);
+  font-size: var(--text-xs); color: var(--bg-base); background: var(--gold);
+  border-radius: var(--radius-sm); padding: 0 var(--space-1);
+  letter-spacing: 0.04em;
+}
+/* Anything past Depop's cap is dimmed rather than hidden — it is still yours. */
+.resale-photo--extra .resale-photo__img { opacity: 0.4; }
+.resale-photo--extra { border-style: dashed; border-color: var(--gold-dim); }
+
+.resale-photo__actions { display: flex; gap: var(--space-1); justify-content: space-between; }
+/* 44px: this is reordered one-handed on a phone. */
+.resale-photo__btn {
+  flex: 1; min-width: 44px; min-height: 44px;
+  padding: 0; font-size: var(--text-base);
+}
+
+/* Stock card */
+.resale-card__img-wrap {
+  width: 72px; height: 72px;
+  display: flex; align-items: center; justify-content: center;
+}
+.resale-card__no-photo {
+  font-size: var(--text-xs); color: var(--text-3); text-align: center; padding: var(--space-1);
+}
+.resale-card__cost-label {
+  font-size: var(--text-xs); color: var(--text-3);
+  letter-spacing: 0.06em; text-transform: uppercase;
+}
+.badge--listing-draft    { background: rgba(143,168,192,0.15); color: var(--text-2); }
+.badge--listing-listed   { background: rgba(201,168,76,0.15);  color: var(--gold); }
+.badge--listing-sold     { background: rgba(78,205,196,0.15);  color: var(--gain); }
+.badge--listing-delisted { background: rgba(224,122,95,0.15);  color: var(--loss); }
+
+@media (max-width: 400px) {
+  .resale-attrs__grid { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .resale-card, .resale-photo, .resale-photo__btn { transition: none; }
+  .resale-card:hover { transform: none; }
+}
