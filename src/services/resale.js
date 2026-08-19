@@ -81,11 +81,12 @@ export async function removeResalePhoto(id) {
 }
 
 export async function reorderResalePhotos(ordered) {
-  // The unique (item_id, position) constraint is deferrable, so renumbering in
-  // one upsert is safe even though intermediate states collide.
-  const { error } = await supabase
-    .from('resale_photos')
-    .upsert(ordered.map((p, i) => ({ id: p.id, item_id: p.item_id, storage_path: p.storage_path, position: i })))
+  // Renumber via a function that takes only ids. Upserting whole rows would send
+  // storage_path back from a possibly stale local copy, and one-by-one updates
+  // collide mid-swap because each is its own transaction.
+  const { error } = await supabase.rpc('resale_reorder_photos', {
+    photo_ids: ordered.map(p => p.id),
+  })
   if (error) throw error
 }
 
@@ -107,10 +108,22 @@ export async function createListing(payload) {
 }
 
 export async function updateListing(id, payload) {
+  // Read the old price first so the audit log records actual price changes
+  // rather than every save that happens to include the price field.
+  let previousPrice
+  if (payload.price !== undefined) {
+    const { data: before } = await supabase
+      .from('resale_listings').select('price').eq('id', id).maybeSingle()
+    previousPrice = before?.price
+  }
+
   const { data, error } = await supabase
     .from('resale_listings').update(payload).eq('id', id).select().single()
   if (error) throw error
-  if (payload.price !== undefined) await logEvent(id, 'price_changed', { price: payload.price })
+
+  if (payload.price !== undefined && Number(previousPrice) !== Number(payload.price)) {
+    await logEvent(id, 'price_changed', { from: previousPrice, to: payload.price })
+  }
   return data
 }
 
