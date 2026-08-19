@@ -479,3 +479,112 @@ input:focus, select:focus, textarea:focus { border-color: var(--gold); }
   border-radius: var(--radius-sm); padding: var(--space-2) var(--space-3);
   max-width: 100%; overflow-x: auto;
 }
+
+/* ── Dashboard & nav ── */
+
+/* Four tabs at 56px.
+   Sign out moved to the header, so the bar is exactly the four destinations and
+   each takes a full quarter of the width. `min-width: 0` lets the flex children
+   shrink evenly instead of one label pushing the others out, and the type steps
+   down a notch on the narrowest phones so nothing has to truncate. The link
+   fills the bar's full height, which keeps every target well over 44px. */
+.shell__header { justify-content: space-between; gap: var(--space-3); }
+.shell__brand { text-decoration: none; }
+.shell__brand:hover { text-decoration: none; color: var(--gold); }
+.shell__signout {
+  flex-shrink: 0;
+  font-size: var(--text-xs);
+  min-height: 44px;
+  padding: 0 var(--space-3);
+}
+
+.nav { padding: 0; gap: 0; }
+.nav__link {
+  min-width: 0;
+  min-height: 44px;
+  padding: 0 var(--space-1);
+  white-space: nowrap;
+  text-align: center;
+}
+@media (max-width: 359px) {
+  .nav__link { font-size: var(--text-xs); letter-spacing: -0.01em; }
+}
+
+/* Two modules, one screen, never one number.
+   The visual separation is load-bearing: each module is its own bordered card
+   with its own accent and an explicit statement of what basis its figures are
+   on, so no one reads a resale figure and a collection figure as comparable —
+   let alone addable. */
+.dash-module {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+}
+.dash-module--resale     { border-left-color: var(--gold); }
+.dash-module--collection { border-left-color: var(--gain); }
+.dash-module__head {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: var(--space-3); flex-wrap: wrap;
+  margin-bottom: var(--space-3);
+}
+.dash-module__title {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 300;
+  color: var(--text-1);
+}
+.dash-module__basis {
+  font-size: var(--text-xs);
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.dash-module__failure { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-2); }
+
+/* The gap between the two cards is doing work, so it is wide and it is captioned. */
+.dash-divider-note {
+  font-size: var(--text-xs);
+  line-height: 1.5;
+  color: var(--text-3);
+  padding: var(--space-4) var(--space-2);
+  margin: 0;
+  text-align: center;
+}
+
+/* The bump worklist: the only recurring job on the page, so it is the only
+   thing on it that is a button-sized target rather than a read-only figure. */
+.dash-bump {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 0 var(--space-3);
+  min-height: 56px;
+  padding: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-3);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  transition: border-color 0.15s;
+}
+.dash-bump:hover { text-decoration: none; border-color: var(--text-3); }
+.dash-bump__label {
+  font-size: var(--text-xs); color: var(--text-3);
+  text-transform: uppercase; letter-spacing: 0.06em;
+}
+.dash-bump__value {
+  grid-column: 2; grid-row: 1 / span 2;
+  font-size: var(--text-3xl); color: var(--text-2); line-height: 1;
+}
+.dash-bump__hint { font-size: var(--text-sm); color: var(--text-2); }
+.dash-bump--due {
+  background: rgba(201,168,76,0.08);
+  border-color: var(--gold-dim);
+}
+.dash-bump--due:hover { border-color: var(--gold); }
+.dash-bump--due .dash-bump__label { color: var(--gold); }
+.dash-bump--due .dash-bump__value { color: var(--gold); }
+.dash-bump--due .dash-bump__hint { color: var(--text-1); }
+.dash-module .summary-grid { margin-bottom: 0; }

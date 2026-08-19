@@ -6,11 +6,14 @@ import { ErrorBoundary, LazyChunk } from './components/ui/ErrorBoundary'
 import { Shell } from './components/layout/Shell'
 import { CollectionPage } from './pages/CollectionPage'
 import { CalendarPage } from './pages/CalendarPage'
+import { DashboardPage } from './pages/DashboardPage'
+import { ResalePage } from './pages/ResalePage'
 import './styles/tokens.css'
 import './styles/global.css'
 
-// Collection is the landing route; Analytics is the only page built on `recharts`,
-// so it is fetched when that tab is first opened rather than at cold start.
+// The dashboard is the landing route; Analytics is the only page built on
+// `recharts`, so it is fetched when that tab is first opened rather than at cold
+// start. Nothing the dashboard imports may reach recharts, or the split is undone.
 const AnalyticsPage = lazy(() =>
   import('./pages/AnalyticsPage').then(m => ({ default: m.AnalyticsPage }))
 )
@@ -27,8 +30,9 @@ export default function App() {
       <BrowserRouter>
         <Shell>
           <Routes>
-            <Route path="/" element={<Navigate to="/collection" replace />} />
+            <Route path="/" element={<DashboardPage />} />
             <Route path="/collection" element={<CollectionPage />} />
+            <Route path="/resale" element={<ResalePage />} />
             <Route
               path="/analytics"
               element={
@@ -51,6 +55,9 @@ export default function App() {
               }
             />
             <Route path="/calendar" element={<CalendarPage />} />
+            {/* An unknown path in an installed PWA has no address bar to correct
+                it, so send it to the dashboard rather than a blank outlet. */}
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Shell>
       </BrowserRouter>
