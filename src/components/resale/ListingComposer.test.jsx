@@ -61,15 +61,17 @@ describe('ListingComposer character counter', () => {
 })
 
 describe('ListingComposer placeholder validation', () => {
-  it('names every placeholder the item could not fill', async () => {
+  // render() strips a placeholder it cannot fill, so the copy is publishable.
+  // Naming the gap is useful; blocking the save over a missing measurement is not.
+  it('names every placeholder the item could not fill, without blocking the save', async () => {
     const { user } = setup()
     await user.selectOptions(screen.getByRole('combobox', { name: /template/i }), 't1')
 
-    const alert = screen.getByRole('alert')
-    expect(alert).toHaveTextContent(/placeholders with no value/i)
-    expect(alert).toHaveTextContent('size')
-    expect(alert).toHaveTextContent('condition_note')
-    expect(screen.getByRole('button', { name: /save to listing/i })).toBeDisabled()
+    const note = screen.getByRole('status', { name: /missing details/i })
+    expect(note).toHaveTextContent(/no value for/i)
+    expect(note).toHaveTextContent('size')
+    expect(note).toHaveTextContent('condition_note')
+    expect(screen.getByRole('button', { name: /save to listing/i })).toBeEnabled()
   })
 
   it('never leaves a raw placeholder in the text that gets pasted', async () => {
@@ -85,11 +87,11 @@ describe('ListingComposer placeholder validation', () => {
     await user.selectOptions(screen.getByRole('combobox', { name: /template/i }), 't1')
 
     await user.type(screen.getByRole('textbox', { name: /^title$/i }), ' — L')
-    expect(screen.getByRole('alert')).not.toHaveTextContent('size')
-    expect(screen.getByRole('alert')).toHaveTextContent('condition_note')
+    expect(screen.getByRole('status', { name: /missing details/i })).not.toHaveTextContent('size')
+    expect(screen.getByRole('status', { name: /missing details/i })).toHaveTextContent('condition_note')
 
     await user.type(screen.getByRole('textbox', { name: /description/i }), 'Barely worn.')
-    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+    expect(screen.queryByRole('status', { name: /missing details/i })).not.toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: /save to listing/i }))
     expect(onSave).toHaveBeenCalledWith({

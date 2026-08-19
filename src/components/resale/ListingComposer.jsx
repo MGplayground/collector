@@ -103,6 +103,9 @@ export function ListingComposer({ item, listing, templates: provided, onSave, on
   const depopText = toDepopText(composed)
   const left = remainingChars(composed)
   const issues = validate(composed)
+  // Placeholders the item had no value for. render() already stripped them, so
+  // the copy is publishable — these are worth flagging, not worth blocking on.
+  const missingDetails = composed.unresolved
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -182,6 +185,17 @@ export function ListingComposer({ item, listing, templates: provided, onSave, on
         </p>
       </div>
       <pre className="composer__preview">{depopText}</pre>
+
+      {missingDetails.length > 0 && (
+        <div className="composer__gaps" role="status" aria-label="Missing details">
+          <p className="composer__issues-title">
+            No value for: {missingDetails.join(', ')}
+          </p>
+          <p className="composer__gaps-hint">
+            Left out of the copy. Add them to the item if a buyer would ask.
+          </p>
+        </div>
+      )}
 
       {issues.length > 0 && (
         <div className="composer__issues" role="alert">

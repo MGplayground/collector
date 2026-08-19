@@ -93,12 +93,28 @@ export function validate(composed) {
     issues.push(`Depop allows ${DEPOP.MAX_HASHTAGS} hashtags; this has ${composed.hashtags.length}.`)
   }
 
-  if (composed?.unresolved?.length) {
-    issues.push(`Template placeholders with no value: ${composed.unresolved.join(', ')}.`)
+  // A literal {{...}} surviving into the output is an error — it means someone
+  // typed it by hand, because render() strips the ones it resolves. Name them,
+  // so the fix is obvious rather than a hunt through the copy.
+  const literal = [...text.matchAll(/\{\{\s*([\w.]+)\s*\}\}/g)].map(m => m[1])
+  if (literal.length) {
+    issues.push(
+      `The copy still contains ${[...new Set(literal)].map(p => `{{${p}}}`).join(', ')}, ` +
+      'which will publish exactly as written.'
+    )
   }
 
   return issues
 }
+
+/**
+ * Advisory, not blocking: placeholders the item had no value for.
+ *
+ * render() already removed them and tidied the gap, so the copy is publishable
+ * — but an empty {{size}} usually means the item is missing a detail a buyer
+ * wants, which is worth saying without standing in the way.
+ */
+export const gaps = composed => composed?.unresolved ?? []
 
 /** Characters left before Depop truncates. Negative means over. */
 export const remainingChars = composed =>

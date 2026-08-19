@@ -51,6 +51,15 @@ describe('publishing', () => {
     expect(canPublish(listing({ state: 'listed' }), [photo()])).toBe(false)
   })
 
+  it('refuses copy that still contains an unresolved placeholder', () => {
+    const raw = listing({ title: '{{brand}} jacket' })
+    expect(publishBlockers(raw, [photo()]).join(' ')).toMatch(/placeholders/)
+    expect(canPublish(raw, [photo()])).toBe(false)
+
+    const inDescription = listing({ description: 'Size {{ size }}.' })
+    expect(canPublish(inDescription, [photo()])).toBe(false)
+  })
+
   it('allows a delisted listing to be relisted', () => {
     expect(canPublish(listing({ state: 'delisted' }), [photo()])).toBe(true)
   })

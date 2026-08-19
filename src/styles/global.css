@@ -802,3 +802,14 @@ input:focus, select:focus, textarea:focus { border-color: var(--gold); }
 .dash-bump--due .dash-bump__value { color: var(--gold); }
 .dash-bump--due .dash-bump__hint { color: var(--text-1); }
 .dash-module .summary-grid { margin-bottom: 0; }
+
+/* ── Resale: composer gaps (advisory, not blocking) ─────────────── */
+.composer__gaps {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--gold-dim);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  display: flex; flex-direction: column; gap: var(--space-1);
+}
+.composer__gaps-hint { font-size: var(--text-xs); color: var(--text-3); }

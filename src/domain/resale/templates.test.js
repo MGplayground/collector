@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { compose, remainingChars, render, toDepopText, validate } from './templates'
+import { compose, gaps, remainingChars, render, toDepopText, validate } from './templates'
 import { DEPOP } from './types'
 
 const item = (over = {}) => ({
@@ -84,9 +84,17 @@ describe('validate', () => {
     expect(validate({ title: 'x'.repeat(900), description: '', hashtags: [] })).toEqual([])
   })
 
-  it('reports unresolved placeholders', () => {
-    const issues = validate(compose(template({ title_template: '{{waist}}' }), item()))
-    expect(issues.join(' ')).toMatch(/waist/)
+  // render() strips placeholders it cannot fill, so the copy is publishable.
+  // Reporting them as errors would block a listing over a missing measurement.
+  it('does not block on a placeholder the item had no value for', () => {
+    const composed = compose(template({ description_template: 'Waist {{waist}}.' }), item())
+    expect(validate(composed)).toEqual([])
+    expect(gaps(composed)).toContain('waist')
+  })
+
+  it('does block on a literal placeholder typed into the copy by hand', () => {
+    const issues = validate({ title: 'Carhartt {{brand}}', description: 'x', hashtags: [] })
+    expect(issues.join(' ')).toMatch(/\{\{brand\}\}/)
   })
 })
 

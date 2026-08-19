@@ -7,7 +7,6 @@ import { Shell } from './components/layout/Shell'
 import { CollectionPage } from './pages/CollectionPage'
 import { CalendarPage } from './pages/CalendarPage'
 import { DashboardPage } from './pages/DashboardPage'
-import { ResalePage } from './pages/ResalePage'
 import './styles/tokens.css'
 import './styles/global.css'
 
@@ -16,6 +15,13 @@ import './styles/global.css'
 // start. Nothing the dashboard imports may reach recharts, or the split is undone.
 const AnalyticsPage = lazy(() =>
   import('./pages/AnalyticsPage').then(m => ({ default: m.AnalyticsPage }))
+)
+
+// Resale is a whole module — form, photo manager, composer, publish panel — and
+// the landing route is the dashboard, which needs only its summary maths. Same
+// reasoning as Analytics: keep it out of the cold-start bundle.
+const ResalePage = lazy(() =>
+  import('./pages/ResalePage').then(m => ({ default: m.ResalePage }))
 )
 
 export default function App() {
@@ -32,7 +38,27 @@ export default function App() {
           <Routes>
             <Route path="/" element={<DashboardPage />} />
             <Route path="/collection" element={<CollectionPage />} />
-            <Route path="/resale" element={<ResalePage />} />
+            <Route
+              path="/resale"
+              element={
+                <LazyChunk
+                  loading={<p className="item-list-loading">Loading…</p>}
+                  error={
+                    <div>
+                      <div className="page-header"><h2 className="page-title">Resale</h2></div>
+                      <p className="error-text" role="alert">
+                        Couldn’t load Resale. Check your connection, then reload the app.
+                      </p>
+                      <button className="btn btn--primary" onClick={() => window.location.reload()}>
+                        Reload
+                      </button>
+                    </div>
+                  }
+                >
+                  <ResalePage />
+                </LazyChunk>
+              }
+            />
             <Route
               path="/analytics"
               element={

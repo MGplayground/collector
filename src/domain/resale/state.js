@@ -32,11 +32,20 @@ export function canTransition(from, to) {
  * Returns the missing pieces rather than a boolean so the UI can say what to
  * fix instead of just disabling a button with no explanation.
  */
+const UNRESOLVED = /\{\{\s*[\w.]+\s*\}\}/
+
 export function publishBlockers(listing, photos = []) {
   const missing = []
   if (!photos.length) missing.push('at least one photo')
   if (!listing?.title?.trim()) missing.push('a title')
   if (!listing?.description?.trim()) missing.push('a description')
+
+  // The composer blocks saving with an unresolved placeholder, but a listing
+  // written any other way could still carry a literal {{brand}} to Depop.
+  // This is the last gate before it goes live, so it checks too.
+  if (UNRESOLVED.test(listing?.title ?? '') || UNRESOLVED.test(listing?.description ?? '')) {
+    missing.push('template placeholders filled in (the copy still contains {{...}})')
+  }
   if (listing?.price == null || Number(listing.price) <= 0) missing.push('a price')
   if (listing?.state && listing.state !== DRAFT && listing.state !== DELISTED) {
     missing.push(`a draft or delisted listing (this one is ${listing.state})`)
